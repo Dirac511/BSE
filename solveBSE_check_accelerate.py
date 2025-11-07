@@ -1523,25 +1523,25 @@ class BSE:
                     for l4 in range(self.nOrb):
                         for iqz in range(0,1):
                             if self.vertex_channel in ("PARTICLE_HOLE_MAGNETIC"):
-                                self.G4K[0, 0, iqz] += (self.G4k[l1, l2, l3, l4] * Matrix[0][0][l1][l3] * Matrix[0][0][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[0][0][l1][l3] * Matrix[1][1][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[1][1][l1][l3] * Matrix[0][0][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[1][1][l1][l3] * Matrix[1][1][l2][l4])*Mat[iqz][l2][l3]
+                                self.G4K[0, 0, iqz] += (self.G4k[l1, l2, l3, l4] * Matrix[0][0][l1][l2] * Matrix[0][0][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[0][0][l1][l2] * Matrix[1][1][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[1][1][l1][l2] * Matrix[0][0][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[1][1][l1][l2] * Matrix[1][1][l3][l4])*Mat[iqz][l1][l3]
 
-                                self.G4K[0, 1, iqz] += (self.G4k[l1, l2, l3, l4] * Matrix[0][0][l1][l3] * Matrix[2][2][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[0][0][l1][l3] * Matrix[3][3][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[1][1][l1][l3] * Matrix[2][2][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[1][1][l1][l3] * Matrix[3][3][l2][l4])*Mat[iqz][l2][l3]
+                                self.G4K[0, 1, iqz] += (self.G4k[l1, l2, l3, l4] * Matrix[0][0][l1][l2] * Matrix[2][2][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[0][0][l1][l2] * Matrix[3][3][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[1][1][l1][l2] * Matrix[2][2][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[1][1][l1][l2] * Matrix[3][3][l3][l4])*Mat[iqz][l1][l3]
 
-                                self.G4K[1, 0, iqz] += (self.G4k[l1, l2, l3, l4] * Matrix[2][2][l1][l3] * Matrix[0][0][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[2][2][l1][l3] * Matrix[1][1][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[3][3][l1][l3] * Matrix[0][0][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[3][3][l1][l3] * Matrix[1][1][l2][l4])*Mat[iqz][l2][l3]
+                                self.G4K[1, 0, iqz] += (self.G4k[l1, l2, l3, l4] * Matrix[2][2][l1][l2] * Matrix[0][0][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[2][2][l1][l2] * Matrix[1][1][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[3][3][l1][l2] * Matrix[0][0][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[3][3][l1][l2] * Matrix[1][1][l3][l4])*Mat[iqz][l1][l3]
 
-                                self.G4K[1, 1, iqz] += (self.G4k[l1, l2, l3, l4] * Matrix[2][2][l1][l3] * Matrix[2][2][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[2][2][l1][l3] * Matrix[3][3][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[3][3][l1][l3] * Matrix[2][2][l2][l4] + \
-                                                        self.G4k[l1, l2, l3, l4] * Matrix[3][3][l1][l3] * Matrix[3][3][l2][l4])*Mat[iqz][l2][l3]
+                                self.G4K[1, 1, iqz] += (self.G4k[l1, l2, l3, l4] * Matrix[2][2][l1][l2] * Matrix[2][2][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[2][2][l1][l2] * Matrix[3][3][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[3][3][l1][l2] * Matrix[2][2][l3][l4] + \
+                                                        self.G4k[l1, l2, l3, l4] * Matrix[3][3][l1][l2] * Matrix[3][3][l3][l4])*Mat[iqz][l1][l3]
 
         print("cluster susceptibility, Total qz=0", ": T = ", self.Tval, ' ', real(sum(self.G4K[:,:,0])/(self.Nc * self.invT)))
         print("cluster susceptibility, Total qz=pi", ": T = ", self.Tval, ' ', real(sum(self.G4K[:,:,1])/(self.Nc * self.invT)))
