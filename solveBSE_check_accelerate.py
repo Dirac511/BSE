@@ -81,6 +81,7 @@ class BSE:
         '''
         if self.calcRedVertex: 
             self.calcReducibleLatticeVertex()
+            self.calpairstructure()
         if self.vertex_channel in ("PARTICLE_PARTICLE_SUPERCONDUCTING","PARTICLE_PARTICLE_UP_DOWN"):
             #self.calcPsCluster()      # s-wave
             self.calcSCClusterSus()   # es- and d-wave
