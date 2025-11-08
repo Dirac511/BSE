@@ -1703,6 +1703,44 @@ class BSE:
         self.GammaRed = dot(self.pminv, Gamma)
         self.GammaRed = self.GammaRed.reshape(NwG4, Nc, nOrb, nOrb, NwG4, Nc, nOrb, nOrb)
 
+    def calpairstructure(self):
+        print("Calculate pair strcture based on  maier's arxiv.2506.07741", '\n')
+        nOrb = self.nOrb;
+        Nc = self.Nc;
+        csum = np.zeros((Nc, nOrb, nOrb, Nc, nOrb, nOrb), dtype='complex')
+        csum = np.einsum('wkabwkef,wkefmngh,mnghmncd -> kabncd',self.chi0, self.GammaRed, self.chi0)
+        csum[:, :, :, :, :, :] /= (self.Nc * self.invT)
+        self.csumM = csum.reshape(Nc*nOrb*nOrb,Nc*nOrb*nOrb)/self.invT
+
+        w,v = linalg.eig(self.csumM)
+        wt = abs(w-1)
+        ilead = argsort(wt)
+        self.lambdas = w[ilead]
+        self.evecs = v[:,ilead]
+        self.evecs = self.evecs.reshape(Nc,nOrb,nOrb,Nc*nOrb*nOrb)
+        print ('\n',"Leading 16 eigenvalues (no symmetrization)",self.Tval,self.lambdas[0:16])
+
+        if self.write_data_file:
+            fname = 'leadingphi_Evec_vs_K_T'+str(self.Tval)+'.txt'
+            if os.path.isfile(fname):
+                os.remove(fname)
+
+            for io1 in range(nOrb):
+                for io2 in range(nOrb):
+                    o1s = np.full((1, 1), io1)
+                    o2s = np.full((1, 1), io2)
+                    #print(o1s,o2s)
+                    # print first two leading Evec to include cases
+                    for ilam in range(0,16):
+                        for iNc in range(Nc):
+                            #self.evecws[iNc,io1,io2,ilam] = sum(self.evecs[:,iNc,io1,io2,ilam])
+                            kx = self.Kvecs[iNc,0]; ky = self.Kvecs[iNc,1]
+                            kxs = np.full((1, 1), kx)
+                            kys = np.full((1, 1), ky)
+                            #print(kxs,kys)
+                            ## wirte the data of orbital-basis eigenvector at lowest frequency
+                            self.write_data_5cols(fname, o1s, o2s, kxs, kys, self.evecs[iNc,io1,io2,ilam])
+
     def calcLatticeSCSus(self):
         '''
         For PARTICLE_PARTICLE_UP_DOWN channel
