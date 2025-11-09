@@ -342,6 +342,10 @@ class BSE:
             print("ex = ", self.ex)
             self.ez = array(f['parameters']['La3Ni2O7-model']['ez'])[0]
             print("ez = ", self.ez)
+            self.eb = array(f['parameters']['La3Ni2O7-model']['eb'])[0]
+            print("eb = ", self.eb)
+            self.et = array(f['parameters']['La3Ni2O7-model']['et'])[0]
+            print("et = ", self.et)
 
             #### these on-site Coulomb interactions are not clear!!! need checking
             #self.Udx = array(f['parameters']['La3Ni2O7-model']['Udx'])[0]
@@ -1719,7 +1723,7 @@ class BSE:
         self.lambdas = w[ilead]
         self.evecs = v[:,ilead]
         self.evecs = self.evecs.reshape(Nc,nOrb,nOrb,Nc*nOrb*nOrb)
-        print ('\n',"Leading 16 eigenvalues (no symmetrization)",self.Tval,self.lambdas[0:16])
+        print ('\n',"Leading 16 eigenvalues for G_pp^Gamma (no symmetrization)",self.Tval,self.lambdas[0:16])
 
         if self.write_data_file:
             fname = 'leadingphi_Evec_vs_K_T'+str(self.Tval)+'.txt'
@@ -2223,18 +2227,20 @@ class BSE:
 
         elif self.model=='La3Ni2O7': ## keep the sign(+) being consistent with the Compress_thinflim_Simplified_Model.txt, rather than sign(-)
             ek  = np.zeros((self.nOrb,self.nOrb),dtype='complex')
-            Hx  = self.ex + 2.*self.t11x*(cos(kx)+cos(ky)) + 4.*self.t11xy*cos(kx)*cos(ky) + 2.*self.t11xx*(cos(2*kx)+cos(2*ky))
-            Hz  = self.ez + 2.*self.t22x*(cos(kx)+cos(ky)) + 4.*self.t22xy*cos(kx)*cos(ky) + 2.*self.t22xx*(cos(2*kx)+cos(2*ky))
+            Hx0  = self.ex + self.eb + 2.*self.t11x*(cos(kx)+cos(ky)) + 4.*self.t11xy*cos(kx)*cos(ky) + 2.*self.t11xx*(cos(2*kx)+cos(2*ky))
+            Hz1  = self.ez + slef.eb + 2.*self.t22x*(cos(kx)+cos(ky)) + 4.*self.t22xy*cos(kx)*cos(ky) + 2.*self.t22xx*(cos(2*kx)+cos(2*ky))
+            Hx2  = self.ex + self.et + 2.*self.t11x*(cos(kx)+cos(ky)) + 4.*self.t11xy*cos(kx)*cos(ky) + 2.*self.t11xx*(cos(2*kx)+cos(2*ky))
+            Hz3  = self.ez + slef.et + 2.*self.t22x*(cos(kx)+cos(ky)) + 4.*self.t22xy*cos(kx)*cos(ky) + 2.*self.t22xx*(cos(2*kx)+cos(2*ky))
             V   = 2.*self.t12x*(cos(kx)-cos(ky)) + 2.*self.t12xx*(cos(2*kx)-cos(2*ky))
 
             Hxp = self.s110 + 2.*self.s11x*(cos(kx)+cos(ky)) + 4. * self.s11xy*cos(kx)*cos(ky) + 2.*self.s11xx*(cos(2*kx)+cos(2*ky))
             Hzp = self.s220 + 2.*self.s22x*(cos(kx)+cos(ky)) + 4. * self.s22xy*cos(kx)*cos(ky) + 2.*self.s22xx*(cos(2*kx)+cos(2*ky))
             Vp  = 2.*self.s12x*(cos(kx)-cos(ky)) + 2.*self.s12xx*(cos(2.*kx)-cos(2.*ky))
 
-            ek[0,0] = Hx ; ek[0,1] = V  ; ek[0,2] = Hxp; ek[0,3] = Vp      ## HA = [Hx, V      HAB = [Hxp, Vp
-            ek[1,0] = V  ; ek[1,1] = Hz ; ek[1,2] = Vp ; ek[1,3] = Hzp     ##       V, Hz]            Vp, Hzp]
-            ek[2,0] = Hxp; ek[2,1] = Vp ; ek[2,2] = Hx ; ek[2,3] = V       ##  H = [HA, HAB
-            ek[3,0] = Vp ; ek[3,1] = Hzp; ek[3,2] = V  ; ek[3,3] = Hz      ##       HAB, HA]
+            ek[0,0] = Hx0 ; ek[0,1] = V  ; ek[0,2] = Hxp; ek[0,3] = Vp      ## HA = [Hx, V      HAB = [Hxp, Vp
+            ek[1,0] = V  ; ek[1,1] = Hz1 ; ek[1,2] = Vp ; ek[1,3] = Hzp     ##       V, Hz]            Vp, Hzp]
+            ek[2,0] = Hxp; ek[2,1] = Vp ; ek[2,2] = Hx2 ; ek[2,3] = V       ##  H = [HA, HAB
+            ek[3,0] = Vp ; ek[3,1] = Hzp; ek[3,2] = V  ; ek[3,3] = Hz3      ##       HAB, HA]
 
         elif self.model=='bilayer':
             ek = np.zeros((self.nOrb,self.nOrb),dtype='complex')
