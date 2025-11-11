@@ -1322,7 +1322,7 @@ class BSE:
                      targetVec[iwn,iNc,:,:,ia] = np.matmul(tmatinv,np.matmul(evecs[iwn,iNc,:,:,ia],tmat)).astype('complex') #refer to note
 
         if self.write_data_file:
-            fname = 'leadingspm_Evec_vs_K_T'+str(self.Tval)+'.txt'
+            fname = 'Band_Evec_vs_K_T'+str(self.Tval)+'.txt'
             if os.path.isfile(fname):
                 os.remove(fname)    
   
@@ -1358,7 +1358,7 @@ class BSE:
         print ('\n',"Leading 16 eigenvalues of BSE (no symmetrization)",self.Tval,self.lambdas[0:16])
   
         if self.write_data_file:
-            fname = 'leading_Evec_vs_K_T'+str(self.Tval)+'.txt'
+            fname = 'Orbital_Evec_vs_K_T'+str(self.Tval)+'.txt'
             if os.path.isfile(fname):
                 os.remove(fname)
                         
