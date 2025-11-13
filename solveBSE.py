@@ -1868,6 +1868,20 @@ class BSE:
             #         ccsum[0, 0, 3, 3]+ccsum[1, 1, 3, 3]+ccsum[0, 0, 2, 2]+ccsum[1, 1, 2, 2]   ##sum the two orbitals
             #Pdc1 = ccsum[0, 0, 0, 0]+ccsum[2, 2, 2, 2]    ## only dx2y2
             #Pdc2 = ccsum[1, 1, 1, 1]+ccsum[3, 3, 3, 3]    ## only dz2
+
+            self.P = np.zeros((16, 16), dtype='complex')
+            #for l1 in range(nOrb):
+            #    for l2 in range(nOrb):
+            #         self.PspmM[l1,l2] = csumspm[l1, l1, l2, l2]
+            #self.PspmM = np.linalg.inv(csumspm)
+            self.P = csumspm.reshape(16,16)
+            Val,Vec = np.linalg.eig(self.P)
+            wt = abs(Val-1)
+            ilead = argsort(wt)
+            Val = Val[ilead]
+            Vec = Vec[:,ilead]
+            for i in range(16):
+                print('*** EigenValue: ', Val[i], '*** EigenvVec: ', Vec[:,i])
         
             ##for spm pair-field susceptibility with the Cluster form-factors
             a = np.array([1/sqrt(2),0,1/sqrt(2),0])  # Bonding   x
