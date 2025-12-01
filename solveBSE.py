@@ -1503,7 +1503,7 @@ class BSE:
             for l2 in range(self.nOrb):
                 for l3 in range(self.nOrb):
                     for l4 in range(self.nOrb):
-                       self.G4k[l1,l2,l3,l4] = self.G4k[l1,l2,l3,l4] = sum(self.G4[:, :, :, :, l1, l2, l3, l4])
+                       self.G4k[l1,l2,l3,l4] = sum(self.G4[:, :, :, :, l1, l2, l3, l4])
                         
         a = np.array([1/sqrt(2),0,1/sqrt(2),0])  # Bonding   x
         b = np.array([0,1/sqrt(2),0,1/sqrt(2)])  # Bonding   z
