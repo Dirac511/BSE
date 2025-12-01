@@ -722,21 +722,13 @@ class BSE:
                         elif self.model == 'bilayer':
                             L = self.trans01(X)
                         elif self.model == 'La3Ni2O7':
-                            L1 = self.trans02(X)
-                            L2 = self.trans13(X)
-                            L3 = self.trans0213(X)
+                            L = self.trans0213(X)
                         #print(X,L)
                         for iw1 in range(NwG4):
                             for iw2 in range(NwG4):
                                 for iK1 in range(Nc):
                                     for iK2 in range(Nc):
-                                        if self.model == 'bilayer' or self.model == 'trilayer':
-                                            self.G4rt[iw1,iK1,l1,l2,iw2,iK2,l3,l4] = 0.5*(G4r[iw1,iK1,X[0],X[1],iw2,iK2,X[2],X[3]]+G4r[iw1,iK1,L[0],L[1],iw2,iK2,L[2],L[3]])
-                                        if self.model == 'La3Ni2O7':
-                                            self.G4rt[iw1,iK1,l1,l2,iw2,iK2,l3,l4] = 0.25*(G4r[iw1,iK1,X[0],X[1],iw2,iK2,X[2],X[3]]+\
-                                                                                           G4r[iw1,iK1,L1[0],L1[1],iw2,iK2,L1[2],L1[3]]+\
-                                                                                           G4r[iw1,iK1,L2[0],L2[1],iw2,iK2,L2[2],L2[3]]+\
-                                                                                           G4r[iw1,iK1,L3[0],L3[1],iw2,iK2,L3[2],L3[3]]) ##double symmetry
+                                        self.G4rt[iw1,iK1,l1,l2,iw2,iK2,l3,l4] = 0.5*(G4r[iw1,iK1,X[0],X[1],iw2,iK2,X[2],X[3]]+G4r[iw1,iK1,L[0],L[1],iw2,iK2,L[2],L[3]])
 
 
     def apply_symmetry_in_chic_layer(self,chic0):  ##symmetrize the cluster chi
@@ -752,19 +744,11 @@ class BSE:
                         elif self.model == 'bilayer':
                             L = self.trans01(X)
                         elif self.model == 'La3Ni2O7':
-                            L1 = self.trans02(X)
-                            L2 = self.trans13(X)
-                            L3 = self.trans0213(X)
+                            L = self.trans0213(X)
                             #print(X,L)
                         for iw1 in range(NwG4):
                             for iK1 in range(Nc):
-                                if self.model == 'bilayer' or self.model == 'trilayer':
-                                    self.chic0t[iw1,iK1,l1,l2,iw1,iK1,l3,l4] = 0.5*(chic0[iw1,iK1,X[0],X[1],iw1,iK1,X[2],X[3]]+chic0[iw1,iK1,L[0],L[1],iw1,iK1,L[2],L[3]])
-                                if self.model == 'La3Ni2O7':
-                                    self.chic0t[iw1,iK1,l1,l2,iw1,iK1,l3,l4] = 0.25*(chic0[iw1,iK1,X[0],X[1],iw1,iK1,X[2],X[3]]+\
-                                                                                     chic0[iw1,iK1,L1[0],L1[1],iw1,iK1,L1[2],L1[3]]+\
-                                                                                     chic0[iw1,iK1,L2[0],L2[1],iw1,iK1,L2[2],L2[3]]+\
-                                                                                     chic0[iw1,iK1,L3[0],L3[1],iw1,iK1,L3[2],L3[3]])
+                                self.chic0t[iw1,iK1,l1,l2,iw1,iK1,l3,l4] = 0.5*(chic0[iw1,iK1,X[0],X[1],iw1,iK1,X[2],X[3]]+chic0[iw1,iK1,L[0],L[1],iw1,iK1,L[2],L[3]])
 
     def apply_symmetry_in_chi_layer(self,chi0): ##symmetrize the lattice chi
         Nc=self.Nc; NwG4=self.NwG4; NwG=self.NwG; nOrb = self.nOrb
@@ -779,19 +763,11 @@ class BSE:
                         elif self.model == 'bilayer':
                             L = self.trans01(X)
                         elif self.model == 'La3Ni2O7':
-                            L1 = self.trans02(X)
-                            L2 = self.trans13(X)
-                            L3 = self.trans0213(X)
+                            L = self.trans0213(X)
                             #print(X,L)
                         for iw1 in range(NwG4):
                             for iK1 in range(Nc):
-                                if self.model == 'bilayer' or self.model == 'trilayer':
-                                    self.chi0t[iw1,iK1,l1,l2,iw1,iK1,l3,l4] = 0.5*(chi0[iw1,iK1,X[0],X[1],iw1,iK1,X[2],X[3]]+chi0[iw1,iK1,L[0],L[1],iw1,iK1,L[2],L[3]])
-                                if self.model == 'La3Ni2O7':
-                                    self.chi0t[iw1,iK1,l1,l2,iw1,iK1,l3,l4] = 0.25*(chi0[iw1,iK1,X[0],X[1],iw1,iK1,X[2],X[3]]+\
-                                                                                    chi0[iw1,iK1,L1[0],L1[1],iw1,iK1,L1[2],L1[3]]+\
-                                                                                    chi0[iw1,iK1,L2[0],L2[1],iw1,iK1,L2[2],L2[3]]+\
-                                                                                    chi0[iw1,iK1,L3[0],L3[1],iw1,iK1,L3[2],L3[3]])
+                                self.chi0t[iw1,iK1,l1,l2,iw1,iK1,l3,l4] = 0.5*(chi0[iw1,iK1,X[0],X[1],iw1,iK1,X[2],X[3]]+chi0[iw1,iK1,L[0],L[1],iw1,iK1,L[2],L[3]])
 
     def apply_transpose_symmetry(self):
         # Apply symmetry Gamma(K,K') = Gamma(K',K)
