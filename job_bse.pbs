@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+#PBS -q batch
+#PBS -N bse
+#PBS -l nodes=cu11:ppn=1
+#PBS -l walltime=5:00:00   \\申请999小时的工作，不满足将无法继续进行计算
+#PBS -e err.bse.%j.txt
+#PBS -o out.bse.%j.txt
+
+cd $PBS_O_WORKDIR
+module load anaconda/4
+export HDF5_USE_FILE_LOCKING=FALSE
+date
+
+python -u main.py > out_SC
+#python -u main.py >> bse_mag_pi0 
+
+date
+
+
