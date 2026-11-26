@@ -165,7 +165,7 @@ def apply_ph_symmetry_pp(paramsd):
     # only when ph_symmetry is satisfied? (probably at half-filling, Q=(pi,pi)
     # is nesting wavevector so that here use Q=(pi,pi))
     nOrb = paramsd['nOrb'];Nc = paramsd['G4'].shape[1];nwn = paramsd['G4'].shape[0]
-    G4_phsymmetry = np.zeros((NwG4, Nc, nOrb, nOrb, NwG4, Nc, nOrb, nOrb), dtype='complex')
+    G4_phsymmetry = np.zeros((nwn, Nc, nOrb, nOrb, nwn, Nc, nOrb, nOrb), dtype='complex')
     iKDiff, iKSum = setupMomentumTables(paramsd)
     iKpipi,iKpi0 = determine_specialK(paramsd)
     for l1 in range(nOrb):
@@ -175,13 +175,13 @@ def apply_ph_symmetry_pp(paramsd):
                     for iw1 in range(nwn):
                         for iw2 in range(nwn):
                             for iK1 in range(Nc):
-                                iK1q = iKSum[iK1, iKPiPi]
+                                iK1q = iKSum[iK1, iKpipi]
                                 for iK2 in range(Nc):
-                                    iK2q = iKSum[iK2, iKPiPi]
+                                    iK2q = iKSum[iK2, iKpipi]
                                     tmp1 = paramsd['G4'][iw1, iK1, iw2, iK2, l1, l2, l3, l4]
                                     tmp2 = paramsd['G4'][iw1, iK1q, iw2, iK2q, l1, l2, l3, l4]
-                                    G4_phsymmetry = [iw1, iK1, iw2, iK2, l1, l2, l3, l4] = 0.5 * (tmp1 + tmp2)
-                                    G4_phsymmetry = [iw1, iK1q, iw2, iK2q, l1, l2, l3, l4] = 0.5 * (tmp1 + tmp2)
+                                    G4_phsymmetry[iw1, iK1, iw2, iK2, l1, l2, l3, l4] = 0.5 * (tmp1 + tmp2)
+                                    G4_phsymmetry[iw1, iK1q, iw2, iK2q, l1, l2, l3, l4] = 0.5 * (tmp1 + tmp2)
     return G4_phsymmetry
 
 #####################################################################
@@ -439,6 +439,7 @@ def setupMomentumTables(paramsd):
 def determine_specialK(paramsd):
     iKPiPi = 0
     iKPi0 = 0
+    iK0Pi = 0
     Nc = paramsd['Nc']
     for iK in range(Nc):
         kx = abs(paramsd['Kvecs'][iK, 0] - np.pi)
@@ -447,14 +448,14 @@ def determine_specialK(paramsd):
         ky2 = abs(paramsd['Kvecs'][iK, 1])
         if kx >= 2 * np.pi: kx -= 2. * pi
         if ky >= 2 * np.pi: ky -= 2. * pi
-        if ky2 >= 2 * np.pi: ky -= 2. * pi
+        if ky2 >= 2 * np.pi: ky2 -= 2. * pi
         if kx ** 2 + ky ** 2 <= 1.0e-5:
             iKPiPi = iK
         if kx ** 2 + ky2 ** 2 <= 1.0e-5:
             iKPi0 = iK
         if kx2 ** 2 + ky ** 2 <= 1.0e-5:
             iK0Pi = iK
-    return iKpipi,iKpi0
+    return iKPiPi,iKPi0
 
 ################################################################################
 def trans_basis(model,paramsd,Tval,evecs,Num,write_data_file):  ### transform the orbital-basis eigenvector into band basis
@@ -492,6 +493,8 @@ def trans_basis(model,paramsd,Tval,evecs,Num,write_data_file):  ### transform th
         fnamew = 'leadingspm_wn_Evec_vs_K_T' + str(Tval) + '.txt'
         if os.path.isfile(fname):
             os.remove(fname)
+        if os.path.isfile(fnamew):
+            os.remove(fnamew)
 
         for ilam in range(0, Num):
             for iNc in range(Nc):
@@ -503,23 +506,23 @@ def trans_basis(model,paramsd,Tval,evecs,Num,write_data_file):  ### transform th
                 ## wirte the data of band-basis eigenvector at lowest frequency
                 if model == 'trilayer':
                     write_data_6cols(fname, kxs, kys, paramsd['wnSet'][int(NwG4 / 2)],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 0, 0, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 1, 1, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 2, 2, ilam])
+                                          targetVec[int(NwG4 / 2), iNc, 0, 0, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 1, 1, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 2, 2, ilam])
                 elif model == 'bilayer':
                     write_data_5cols(fname, kxs, kys, paramsd['wnSet'][int(NwG4 / 2)],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 0, 0, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 1, 1, ilam])
+                                          targetVec[int(NwG4 / 2), iNc, 0, 0, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 1, 1, ilam])
                 elif model == 'La3Ni2O7':
                     write_data_11cols(fname, kxs, kys, paramsd['wnSet'][int(NwG4 / 2)],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 0, 0, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 2, 2, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 1, 1, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 3, 3, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 0, 2, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 2, 0, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 1, 3, ilam],
-                                          targetVec[int(NwG4 / 2):int(NwG4 / 2) + 1, iNc, 3, 1, ilam])
+                                          targetVec[int(NwG4 / 2), iNc, 0, 0, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 2, 2, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 1, 1, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 3, 3, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 0, 2, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 2, 0, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 1, 3, ilam],
+                                          targetVec[int(NwG4 / 2), iNc, 3, 1, ilam])
                     write_data_w_11cols(fnamew, Kxs, Kys, paramsd['wnSet'],
                                           targetVec[:, iNc, 0, 0, ilam],
                                           targetVec[:, iNc, 2, 2, ilam],
@@ -532,47 +535,60 @@ def trans_basis(model,paramsd,Tval,evecs,Num,write_data_file):  ### transform th
 
 #########################################################################################
 
+def _flat(x):
+    # 兼容标量、1x1 二维数组和列向量：统一展平后再按列索引
+    return np.asarray(x).reshape(-1)
+
 def write_data_w_6cols(fname, xs, ys, zs, ws, fs, gs):
     f = open(fname, 'a', 1)
+    xs, ys, zs, ws, fs, gs = map(_flat, (xs, ys, zs, ws, fs, gs))
     for i in range(len(xs)):
         f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i]), float(zs[i]),float(ws[i].real), float(fs[i].real),float(gs[i].real)))
 
 def write_data_w_11cols(fname, xs, ys, zs, ws, fs, gs, ks, ts, hs, ms, ns):
     f = open(fname, 'a', 1)
+    xs, ys, zs, ws, fs, gs, ks, ts, hs, ms, ns = map(_flat, (xs, ys, zs, ws, fs, gs, ks, ts, hs, ms, ns))
     for i in range(len(xs)):
         f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i]), float(zs[i]),float(ws[i].real), float(fs[i].real),float(gs[i].real),float(ks[i].real), float(ts[i].real), float(hs[i].real),float(ms[i].real), float(ns[i].real)))
 
 def write_data_2cols(fname, xs, ys):
     f = open(fname, 'w', 1)
+    xs, ys = map(_flat, (xs, ys))
     for i in range(len(xs)):
-        f.write('{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i])))
+        f.write('{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(np.real(ys[i]))))
 
 def write_data_3cols(fname, xs, ys, zs):
     f = open(fname, 'w', 1)
+    xs, ys, zs = map(_flat, (xs, ys, zs))
     for i in range(len(xs)):
         f.write('{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i]), float(zs[i])))
 
 def write_data_4cols(fname, xs, ys, zs, ws):
     f = open(fname, 'a', 1)
+    xs, ys, zs, ws = map(_flat, (xs, ys, zs, ws))
     for i in range(len(xs)):
-        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs), float(ys), float(zs), float(ws.real)))
+        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i]), float(zs[i]), float(ws[i].real)))
 
 def write_data_5cols(fname, xs, ys, zs, ws, gs):
     f = open(fname, 'a', 1)
+    xs, ys, zs, ws, gs = map(_flat, (xs, ys, zs, ws, gs))
     for i in range(len(xs)):
-        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs), float(ys), float(zs), float(ws.real),float(gs.real)))
+        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i]), float(zs[i]), float(ws[i].real),float(gs[i].real)))
 
 def write_data_6cols(fname, xs, ys, zs, ws, fs, gs):
     f = open(fname, 'a', 1)
+    xs, ys, zs, ws, fs, gs = map(_flat, (xs, ys, zs, ws, fs, gs))
     for i in range(len(xs)):
-        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs), float(ys), float(zs),float(ws.real), float(fs.real),float(gs.real)))
+        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i]), float(zs[i]),float(ws[i].real), float(fs[i].real),float(gs[i].real)))
 
 def write_data_11cols(fname, xs, ys, zs, ws, fs, gs, ks, ts, hs, ms, ns):
     f = open(fname, 'a', 1)
+    xs, ys, zs, ws, fs, gs, ks, ts, hs, ms, ns = map(_flat, (xs, ys, zs, ws, fs, gs, ks, ts, hs, ms, ns))
     for i in range(len(xs)):
-        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs), float(ys), float(zs),float(ws.real), float(fs.real),float(gs.real),float(ks.real), float(ts.real), float(hs.real),float(ms.real), float(ns.real)))
+        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i]), float(zs[i]),float(ws[i].real), float(fs[i].real),float(gs[i].real),float(ks[i].real), float(ts[i].real), float(hs[i].real),float(ms[i].real), float(ns[i].real)))
 
 def write_data_7cols(fname, xs, ys, zs, ws, fs, gs, ks):
     f = open(fname, 'a', 1)
+    xs, ys, zs, ws, fs, gs, ks = map(_flat, (xs, ys, zs, ws, fs, gs, ks))
     for i in range(len(xs)):
-        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs), float(ys), float(zs),float(ws.real), float(fs.real),float(gs.real),float(ks.real)))
+        f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(float(xs[i]), float(ys[i]), float(zs[i]),float(ws[i].real), float(fs[i].real),float(gs[i].real),float(ks[i].real)))

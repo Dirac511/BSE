@@ -148,7 +148,8 @@ def readData(model,f):
     params['iwG40'] = params['NwG4'] / 2
     params['iwG0']  = params['NwG'] / 2
 
-    f.close()
+    if close_file:
+        f.close()
     # Now remove vacuum part of charge G4
     if (params['vertex_channel']=="PARTICLE_HOLE_CHARGE"):
         if (params['qchannel'][0] == 0) & (params['qchannel'][1] == 0):
@@ -160,8 +161,8 @@ def readData(model,f):
                                 for l2 in range(params['nOrb']):
                                     for l3 in range(params['nOrb']):
                                         for l4 in range(params['nOrb']):
-                                            iw1Green = iw1 - self.iwG40 + self.iwG0
-                                            iw2Green = iw2 - self.iwG40 + self.iwG0
+                                            iw1Green = int(iw1 - params['iwG40'] + params['iwG0'])
+                                            iw2Green = int(iw2 - params['iwG40'] + params['iwG0'])
                                             params['G4'][iw1,ik1,iw2,ik2,l1,l2,l3,l4] -= 2.0 * params['Green'][iw1Green,ik1,l1,l2] \
                                                                                         * params['Green'][iw2Green,ik2,l4,l3]
     return params 

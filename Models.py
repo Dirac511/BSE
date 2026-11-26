@@ -169,8 +169,11 @@ def readin_model(model, f):
             print("s12x = ", params['s12x'])
             params['s12xx'] = array(f['parameters']['La3Ni2O7-model']['s12xx'])[0]
             print("s12xx = ", params['s12xx'])
-    except Error:
+    except (KeyError, AttributeError):
         print('No this model:',model)
+
+    if close_file:
+        f.close()
 
     return params
 
@@ -245,7 +248,7 @@ def dispersion(model, paramsd, paramsm, kx, ky):
            ek[1,0] = V   ; ek[1,1] = Hz1 ; ek[1,2] = Vp  ; ek[1,3] = Hzp
            ek[2,0] = Hxp ; ek[2,1] = Vp  ; ek[2,2] = Hx2 ; ek[2,3] = V
            ek[3,0] = Vp  ; ek[3,1] = Hzp ; ek[3,2] = V   ; ek[3,3] = Hz3
-    except Error:
+    except (KeyError, AttributeError):
         print('No this model dispersion:',model)
 
     return ek

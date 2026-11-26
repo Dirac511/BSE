@@ -72,7 +72,8 @@ def calcKernelEigenValues(model,pm,paramsd,Tval,Num,write_data_file):
     if model == 'bilayer' or model == 'trilayer' or model == 'La3Ni2O7':
         Operation.trans_basis(model,paramsd,Tval,evecs,Num,write_data_file)
 
-    print('\n', "Leading 16 eigenvalues of BSE (no symmetrization)", Tval, lambdas[0:Num])
+    nshow = 16 if Num >= 16 else Num  
+    print('\n', "Leading", nshow, "eigenvalues of BSE (no symmetrization)", Tval, lambdas[0:nshow])
 
     if write_data_file:
         fname = 'leading_Evec_vs_K_T' + str(Tval) + '.txt'
@@ -80,6 +81,8 @@ def calcKernelEigenValues(model,pm,paramsd,Tval,Num,write_data_file):
         fnamew = 'leading_wn_Evec_vs_K_T' + str(Tval) + '.txt'
         if os.path.isfile(fname):
             os.remove(fname)
+        if os.path.isfile(fnamew):
+            os.remove(fnamew)
         ilams = [];lambdass = [] 
         for ilam in range(0,nt):
             ilams.append(ilam);lambdass.append(lambdas[ilam])
@@ -102,7 +105,7 @@ def calcKernelEigenValues(model,pm,paramsd,Tval,Num,write_data_file):
                         Kys = np.full((NwG4, 1), ky)
                         # print(kxs,kys)
                         ## wirte the data of orbital-basis eigenvector at lowest frequency
-                        Operation.write_data_6cols(fname,o1s,o2s,kxs,kys,paramsd['wnSet'][int(NwG4/2)],evecs[int(NwG4/2):int(NwG4/2)+1,iNc,io1,io2,ilam])
+                        Operation.write_data_6cols(fname,o1s,o2s,kxs,kys,paramsd['wnSet'][int(NwG4/2)],evecs[int(NwG4/2),iNc,io1,io2,ilam])
                         ## wirte the data of orbital-basis eigenvector for all frequency 
                         Operation.write_data_w_6cols(fnamew,O1s,O2s,Kxs,Kys,paramsd['wnSet'],evecs[:,iNc,io1,io2,ilam])
     print('\n',"calKernelMatrix over!",'\n')
